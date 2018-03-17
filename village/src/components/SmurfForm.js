@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
-import axios from "axios";
-import { Link, Redirect } from 'react-router-dom';
-import { Form, Button, Input } from 'reactstrap';
-import './SmurfForm.css';
+import axios from 'axios';
 
 class SmurfForm extends Component {
 
@@ -11,42 +8,14 @@ class SmurfForm extends Component {
     this.state = {
       name: '',
       age: '',
-      height: '',
-      redirect: false,
+      height: ''
     };
-    this.addSmurf = this.addSmurf.bind(this);
+    
     this.updateName = this.updateName.bind(this);
     this.updateAge = this.updateAge.bind(this);
     this.updateHeight = this.updateHeight.bind(this);
+    this.addSmurf = this.addSmurf.bind(this)
   }
-
-  addSmurf(event) {
-    // event.preventDefault();
-    // add code to create the smurf using the api
-    
-    const newSmurf = {
-      name: this.state.name,
-      age: this.state.age,
-      height: this.state.height
-    }
-    
-    
-    axios.post("http://localhost:3333/smurfs", newSmurf)
-    .then(response => {
-      this.setState({
-        name: '',
-        age: '',
-        height: '',
-        redirect: true,
-      })
-      // this.getData();
-      console.log(response, 'post');
-    })
-    .catch(error => {
-      console.log(error);
-    });
-  }
-
 
   updateName(event) {
     this.setState({
@@ -66,37 +35,49 @@ class SmurfForm extends Component {
     });
   }
 
+  addSmurf(event) {
+
+    // add code to create the smurf using the api
+    event.preventDefault();
+    const newSmurf = this.state; 
+    axios.post("http://localhost:3333/smurfs", newSmurf)
+      .then(response => {
+        this.props.getSmurfs();
+        console.log('From post:', response);
+        console.log('New smurf from post:', response.data)
+      })
+      .catch(error => {
+        console.log(error);
+      });
+      // Clears inputs
+      this.setState({
+        name: '',
+        age: '',
+        height: ''
+      })   
+  }
+
   render() {
-    if (this.state.redirect) {
-      return <Redirect push to="/smurfs" />
-    }
     return (
-      
       <div className="SmurfForm">
-        <Form className="d-flex w-50" onSubmit={this.addSmurf}>
-          <Input
+        <form onSubmit={this.addSmurf}>
+          <input
             onChange={this.updateName}
             placeholder="name"
             value={this.state.name}
-            // type="text"
           />
-          <Input
+          <input
             onChange={this.updateAge}
             placeholder="age"
             value={this.state.age}
-            // type="number"
           />
-          <Input
+          <input
             onChange={this.updateHeight}
             placeholder="height"
             value={this.state.height}
-            // type="number"
           />
-          <Button color="danger" type="submit">
-              Add Smurf!
-              <Link to="/"></Link>
-          </Button>
-        </Form>
+          <button type="submit">Add to the village</button>
+        </form>
       </div>
     );
   }
